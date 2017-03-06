@@ -1,6 +1,7 @@
-local utils = require 'lem.utils'
+--local utils = require 'lem.utils'
 
-local updatenow = utils.updatenow
+--local updatenow = utils.updatenow
+local function updatenow() return nil end
 local pack = table.pack
 local unpack = table.unpack
 local format = string.format
@@ -75,7 +76,9 @@ function test:run()
 	t1 = updatenow()
 	local ret, msg = xpcall(tester, msg_handler, self)
 	t2 = updatenow()
-	self.runtime = t2 - t1
+	if t1 then
+		self.runtime = t2 - t1
+	end
 	self:leave()
 	if not ret then
 		self.error_msg = msg
@@ -125,8 +128,13 @@ function test:stats()
 	end
 	local run, passed, asserts = master.run, master.passed, master.assert_cnt
 	if run == passed then
-		print(format('%d/%d  All tests passed, %d assertions in %.3fs',
-			run, passed, asserts, master.test.runtime))
+		local runtime = master.test.runtime
+		local runtimestr = ''
+		if runtime then
+			runtimestr = format(' in %.3fs', runtime)
+		end
+		print(format('%d/%d  All tests passed, %d assertions%s',
+			run, passed, asserts, runtimestr))
 	else
 		print(format('%d/%d  %d failed', run, passed, run-passed))
 	end

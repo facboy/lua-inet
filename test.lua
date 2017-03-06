@@ -1,7 +1,6 @@
-#!/usr/bin/env lem
+#!/usr/bin/env lua
 
-package.path = './?/init.lua;'..package.path..';./lua/?.lua;./lua/?/init.lua;./?.lua'
-package.cpath = package.cpath..';./lua/?.so'
+package.path = './?/init.lua;./lua/?.lua;./lua/?/init.lua;./?.lua;'..package.path
 
 local test = require 'test'
 
