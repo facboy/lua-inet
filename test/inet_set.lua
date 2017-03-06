@@ -2,7 +2,7 @@ local inet = require 'inet'
 local inet_set = require 'inet.set'
 local test = require 'test'
 
-function agg_set(a, b)
+local function agg_set(a, b)
 	inet_set.aggregate(a)
 	assert(#a == #b, 'wrong set size')
 	for i=1,#a do
@@ -13,8 +13,6 @@ end
 
 
 return test.new(function()
-	local ip = inet('10.0.0.0/24')
-
 	agg_set({
 		inet('10.0.0.0/24'),
 		inet('10.0.1.0/24'),

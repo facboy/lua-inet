@@ -273,8 +273,7 @@ end
 
 function inet6:is_balanced()
 	local pcs = self.pcs
-	local i = 8
-	for i=i,8 do
+	for i=1,8 do
 		local piece = pcs[i]
 		if piece < 0 or piece > 0xffff then
 			return false
@@ -453,7 +452,7 @@ function inet6:flip()
 	local flipbit = lshift(1, bitno)
 	local r = self:clone()
 	local val = r.pcs[block]
-	r.pcs[block] = bxor(r.pcs[block], flipbit)
+	r.pcs[block] = bxor(val, flipbit)
 	--print(mask, block, maskbits, bitno, flipbit, self, r:balance())
 	return r
 end

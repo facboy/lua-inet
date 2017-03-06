@@ -12,6 +12,7 @@ local function dontparse(...)
 end
 
 return test.new(function()
+	local ip
 	-- parsing
 	parse('1:2:3:4:5:6:7:8')
 	parse('::1/33')
@@ -35,10 +36,10 @@ return test.new(function()
 	assert(tostring(parse('1:ffff:ffff:fe00::/56') * 2) == '2::/56')
 	assert(tostring(parse('1:ffff:ffff:fe00::/56') * 2 * -2)
 		== '1:ffff:ffff:fe00::/56')
-	local ip = inet('10.0.0.0/33')
+	ip = inet('10.0.0.0/33')
 	assert(ip == nil)
 
-	local ip = inet('10.0.0.0/24')
+	ip = inet('10.0.0.0/24')
 	assert(type(ip) == 'table')
 	assert(#ip == 24, 'incorrect netmask')
 	assert(tostring(ip) == '10.0.0.0/24', 'not human readable')
@@ -84,14 +85,14 @@ return test.new(function()
 	-- test inet*.network
 	assert(inet('10.0.0.1/30'):network() == inet('10.0.0.0/30'), 'inet4.network() is broken')
 	assert(inet('1::2/64'):network() == inet('1::/64'), 'inet6.network() is broken')
-	local ip = inet('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/62')
+	ip = inet('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/62')
 	assert((ip/22):network() == inet('ffff:fc00::/22'), 'inet6.network() is broken')
 	assert((ip/27):network() == inet('ffff:ffe0::/27'), 'inet6.network() is broken')
 
 	--- test inet4:flip
-	assert(inet('10.0.0.1/24'):flip() == inet('10.0.1.1/24'), 'inet.flip() is broken')
-	assert(inet('10.0.0.0/24'):flip() == inet('10.0.1.0/24'), 'inet.flip() is broken')
-	assert(inet('10.0.0.0/24'):flip():flip() == inet('10.0.0.0/24'), 'inet.flip() is broken')
+	assert(inet('10.0.0.1/24'):flip() == inet('10.0.1.1/24'), 'inet4.flip() is broken')
+	assert(inet('10.0.0.0/24'):flip() == inet('10.0.1.0/24'), 'inet4.flip() is broken')
+	assert(inet('10.0.0.0/24'):flip():flip() == inet('10.0.0.0/24'), 'inet4.flip() is broken')
 	assert(inet('10.20.30.0/24'):flip() == inet('10.20.31.0/24'))
 	assert(inet('10.20.30.5/24'):flip() == inet('10.20.31.5/24'))
 	assert(inet('10.20.30.5/32'):flip() == inet('10.20.30.4/32'))
@@ -104,7 +105,7 @@ return test.new(function()
 	assert(inet('::1/32'):flip() == inet('0:1::1/32'))
 	assert(inet('::1/48'):flip() == inet('0:0:1::1/48'))
 	for i=1,#ips do
-		local ip = ips[i]
+		ip = ips[i]
 		for j=1,128 do
 			local foo = ip / j
 			local bar = foo:flip()
