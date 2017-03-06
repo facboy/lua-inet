@@ -1,7 +1,6 @@
 local inet = require 'inet'
 local inet_set = require 'inet.set'
 local test = require 'test'
-local inspect = require 'inspect'
 
 function agg_set(a, b)
 	inet_set.aggregate(a)
