@@ -172,9 +172,13 @@ function inet4:__le(other)
 		return false
 	end
 	local mask = other.mask
-	local selfnet = replace(self.bip, 0, 0, 32-mask)
-	local othernet = replace(other.bip, 0, 0, 32-mask)
-	return selfnet == othernet
+	if mask == 32 then
+		return self.bip == other.bip
+	else
+		local selfnet = replace(self.bip, 0, 0, 32-mask)
+		local othernet = replace(other.bip, 0, 0, 32-mask)
+		return selfnet == othernet
+	end
 end
 
 function inet4:__eq(other)
@@ -196,8 +200,8 @@ function inet4:flip()
 	local mask = self.mask
 	if mask == 0 then return nil end
 	local hostbits = 32 - mask
-	local flipbit = 1 << hostbits
-	return inet4.new(self.bip ~ flipbit, mask)
+	local flipbit = lshift(1, hostbits)
+	return inet4.new(bxor(self.bip, flipbit), mask)
 end
 
 local function parse6(ipstr)
@@ -429,7 +433,7 @@ function inet6:network()
 			break -- the rest is already zero
 		else
 			local netbitsleft = 16-(netbits-((i-1)*16))
-			newpcs[i] = pcs[i] >> netbitsleft << netbitsleft
+			newpcs[i] = lshift(rshift(pcs[i], netbitsleft), netbitsleft)
 		end
 	end
 	return inet6.new(newpcs, netbits)
@@ -439,17 +443,17 @@ function inet6:flip()
 	-- find twin by flipping the last network bit
 	local mask = self.mask
 	if mask == 0 then return nil end
-	local block = (mask >> 4)+1
-	local maskbits = mask & 0xf
+	local block = rshift(mask, 4)+1
+	local maskbits = band(mask, 0xf)
 	local bitno = 16 - maskbits
 	if bitno == 16 then
 		block = block - 1
 		bitno = 0
 	end
-	local flipbit = 1 << bitno
+	local flipbit = lshift(1, bitno)
 	local r = self:clone()
 	local val = r.pcs[block]
-	r.pcs[block] = r.pcs[block] ~ flipbit
+	r.pcs[block] = bxor(r.pcs[block], flipbit)
 	--print(mask, block, maskbits, bitno, flipbit, self, r:balance())
 	return r
 end
