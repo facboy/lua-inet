@@ -33,11 +33,17 @@ function M.aggregate(t)
 			if ia then
 				local ib = ia:flip() -- counterpart
 				for j=1,n do
-					if j ~= i and t[j] == ib then
-						-- counterpart found, aggregating
-						t[i] = (ia ^ -1):network()
-						t[j] = nil
-						flag = true
+					if j ~= i then
+						if ia == t[j] then
+							-- duplicate found
+							t[j] = nil
+							flag = true
+						elseif t[j] == ib then
+							-- counterpart found, aggregating
+							t[i] = (ia ^ -1):network()
+							t[j] = nil
+							flag = true
+						end
 					end
 				end
 			end
