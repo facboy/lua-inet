@@ -114,6 +114,9 @@ return test.new(function()
 		end
 	end
 
+	-- test inspectablity of metatable
+	assert(#(getmetatable(inet('::/0'))) ~= nil)
+
 	-- TODO inet6.__le
 	-- TODO inet6.__eq
 end)

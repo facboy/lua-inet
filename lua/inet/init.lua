@@ -18,7 +18,9 @@ function inet.new(ip, mask)
 end
 
 function inet:__len()
-	return self.mask
+	local mask = self.mask
+	if mask == nil then return 0 end -- make metatable inspectable
+	return mask
 end
 
 local lshift = bit32.lshift
