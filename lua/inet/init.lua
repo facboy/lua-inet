@@ -5,8 +5,38 @@ local bit32 = require 'bit32'
 
 local inet, inet4, inet6
 
+local mt2fam = {}
+
 inet = {}
 inet.__index = inet
+
+inet4 = setmetatable({}, inet)
+inet4.__index = inet4
+mt2fam[inet4] = 4
+
+inet6 = setmetatable({}, inet)
+inet6.__index = inet6
+mt2fam[inet6] = 6
+
+local function get_mt(t)
+	if type(t) ~= 'table' then return nil end
+	return getmetatable(t)
+end
+
+local function is_inet4(t)
+	local mt = get_mt(t)
+	return mt == inet4
+end
+
+local function is_inet6(t)
+	local mt = get_mt(t)
+	return mt == inet6
+end
+
+local function is_inet(t)
+	local mt = get_mt(t)
+	return mt == inet4 or mt == inet6
+end
 
 function inet.new(ip, mask)
 	local ipv6 = string.find(ip, ':', 1, true)
@@ -22,16 +52,19 @@ function inet:__len()
 	if mask == nil then return 0 end -- make metatable inspectable
 	return mask
 end
+inet4.__len = inet.__len
+inet6.__len = inet.__len
+
+function inet:family()
+	local mt = assert(getmetatable(self))
+	return assert(mt2fam[mt])
+end
 
 local lshift = bit32.lshift
 local rshift = bit32.rshift
 local band = bit32.band
 local replace = bit32.replace
 local bxor = bit32.bxor
-
-inet4 = {}
-inet4.__index = inet4
-inet4.__len = inet.__len
 
 local ipv4_parser
 local ipv6_parser
@@ -230,10 +263,6 @@ local function parse6(ipstr)
 	end
 	return pcs, netmask
 end
-
-inet6 = setmetatable({}, inet)
-inet6.__index = inet6
-inet6.__len = inet.__len
 
 function inet6.new(ip, netmask)
 	local pcs, err
@@ -488,8 +517,18 @@ function inet6:__mul(n)
 	end
 	pcs[p] = pcs[p] + low_shift
 	new:balance()
-	-- print(mask % 8)
 	return new
 end
 
-return inet.new
+local M = {}
+local mt = {}
+
+function mt.__call(_, ...)
+	return new_inet(...)
+end
+
+M.is4 = is_inet4
+M.is6 = is_inet6
+M.is  = is_inet
+
+return setmetatable(M, mt)

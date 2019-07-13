@@ -42,6 +42,7 @@ return test.new(function()
 	ip = inet('10.0.0.0/24')
 	assert(type(ip) == 'table')
 	assert(#ip == 24, 'incorrect netmask')
+	assert(ip:family() == 4, 'incorrect family')
 	assert(tostring(ip) == '10.0.0.0/24', 'not human readable')
 
 	assert(inet('10.0.0.0/32') == inet('10.0.0.0'))
@@ -119,4 +120,22 @@ return test.new(function()
 
 	-- TODO inet6.__le
 	-- TODO inet6.__eq
+
+	assert(not inet.is4(false))
+	assert(not inet.is4('foo'))
+	assert(not inet.is4(42))
+	assert(inet.is4(inet('0.0.0.0')))
+	assert(not inet.is4(inet('::')))
+
+	assert(not inet.is6(false))
+	assert(not inet.is6('foo'))
+	assert(not inet.is6(42))
+	assert(not inet.is6(inet('0.0.0.0')))
+	assert(inet.is6(inet('::')))
+
+	assert(not inet.is(false))
+	assert(not inet.is('foo'))
+	assert(not inet.is(42))
+	assert(inet.is(inet('0.0.0.0')))
+	assert(inet.is(inet('::')))
 end)
