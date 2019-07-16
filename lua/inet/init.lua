@@ -417,15 +417,29 @@ function inet6:balance(quick)
 	return self
 end
 
-local function tostr6(self, withmask)
+local function tohex(n)
+	if n == nil then return nil end
+	return format('%x', n)
+end
+
+local function tostr6(self, withmask, embeddedipv4)
 	-- return human readable
 	local pcs = self.pcs
 	local zeros = {}
 
+	if embeddedipv4 == nil then
+		embeddedipv4 = false -- TODO check if well-known prefix
+	end
+
+	local ipv6pieces = 8
+	if embeddedipv4 then
+		ipv6pieces = 6
+	end
+
 	-- count zero clusters
 	local first_zero = 0
 	local prev_was_zero = false
-	for i=1,#pcs do
+	for i=1,ipv6pieces do
 		if pcs[i] == 0 then
 			if prev_was_zero then
 				zeros[first_zero] = zeros[first_zero] + 1
@@ -439,10 +453,11 @@ local function tostr6(self, withmask)
 		end
 	end
 
-	-- find the largest zero cluster
+	-- find the first largest zero cluster
 	local zeros_begin = nil
-	local zeros_cnt = 0
-	for begin,cnt in pairs(zeros) do
+	local zeros_cnt = 1
+	for begin=1,ipv6pieces do
+		local cnt = zeros[begin] or 0
 		if cnt > zeros_cnt then
 			zeros_begin = begin
 			zeros_cnt = cnt
@@ -452,7 +467,7 @@ local function tostr6(self, withmask)
 	-- format ipv6 address
 	local out = ''
 	local i = 1
-	while i <= 8 do
+	while i <= ipv6pieces do
 		if i == zeros_begin then
 			if i > 1 then
 				out = out .. ':'
@@ -462,13 +477,17 @@ local function tostr6(self, withmask)
 			i = i + zeros_cnt
 		else
 			local p = pcs[i]
-			local hexdigits = string.format('%x', p)
+			local hexdigits = tohex(p)
 			out = out .. hexdigits
 			if i ~= 8 then
 				out = out .. ':'
 			end
 			i = i + 1
 		end
+	end
+
+	if embeddedipv4 then
+		out = out .. new_inet4(lshift(pcs[7], 16) + pcs[8]):ipstring()
 	end
 
 	local mask = self.mask
@@ -485,6 +504,14 @@ end
 
 function inet6:ipstring()
 	return tostr6(self, false)
+end
+
+function inet6:ipstring4()
+	return tostr6(self, false, true)
+end
+
+function inet6:ipstring6()
+	return tostr6(self, false, false)
 end
 
 function inet6:cidrstring()
