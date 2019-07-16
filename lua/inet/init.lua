@@ -321,6 +321,10 @@ function inet4:__pow(n)
 	return new_inet4(self.bip, self.mask + n)
 end
 
+function inet4:clone()
+	return new_inet4(self.bip, self.mask)
+end
+
 function inet4:contains(other)
 	if self.mask >= other.mask then
 		return false
