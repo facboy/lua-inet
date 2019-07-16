@@ -647,6 +647,7 @@ end
 function inet6:__mul(n)
 	local new = self:clone()
 	local mask = new.mask
+	if mask == 0 then return nil, 'unable to perform operation' end
 	local pcs = new.pcs
 	local netbitoverflow = mask % 16
 	local netbitremainder = (128-mask) % 16
@@ -662,7 +663,7 @@ function inet6:__mul(n)
 	local shiftet = lshift(n, netbitremainder)
 	local high_shift = rshift(shiftet, 16)
 	local low_shift = band(shiftet, 0xffff)
-	--print(p, netbitoverflow, hex(shiftet), hex(high_shift), hex(low_shift))
+	--print(p, netbitoverflow, tohex(shiftet), tohex(high_shift), tohex(low_shift))
 	if was_negative then
 		high_shift = -high_shift
 		low_shift = -low_shift
