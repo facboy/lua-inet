@@ -321,14 +321,21 @@ function inet4:__pow(n)
 	return new_inet4(self.bip, self.mask + n)
 end
 
-function inet4:__lt(other)
-	if self.mask <= other.mask then
+function inet4:contains(other)
+	if self.mask >= other.mask then
 		return false
 	end
-	local mask = other.mask
-	local selfnet = replace(self.bip, 0, 0, 32-mask)
-	local othernet = replace(other.bip, 0, 0, 32-mask)
-	return selfnet == othernet
+	local mask = self.mask -- make test
+	local self_netbits = replace(self.bip, 0, 0, 32-mask)
+	local other_netbits = replace(other.bip, 0, 0, 32-mask)
+	return self_netbits == other_netbits
+end
+
+function inet4:__lt(other)
+	if self.bip == other.bip then
+		return self.mask < other.mask
+	end
+	return self.bip < other.bip
 end
 
 function inet4:__le(other)
@@ -486,6 +493,53 @@ end
 
 function inet6:clone()
 	return new_inet6(self.pcs, self.mask)
+end
+
+function inet6:contains(other)
+	-- self contains other
+	local mask = self.mask
+
+	if mask > other.mask then
+		return false
+	end
+
+	local snet = self:network()
+	local onet = (other / mask):network()
+
+	return snet == onet
+end
+
+function inet6:__lt(other)
+	-- self < other
+	local spcs = self.pcs
+	local opcs = other.pcs
+
+	for i=1,8 do
+		if spcs[i] < opcs[i] then
+			return true
+		end
+		if spcs[i] > opcs[i] then
+			return false
+		end
+	end
+
+	return self.mask < other.mask
+end
+
+function inet6:__le(other)
+	-- self <= other
+	local spcs = self.pcs
+	local opcs = other.pcs
+	for i=1,8 do
+		if spcs[i] < opcs[i] then
+			return true
+		end
+		if spcs[i] > opcs[i] then
+			return false
+		end
+	end
+
+	return self.mask <= other.mask
 end
 
 function inet6:__eq(other)
