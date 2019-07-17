@@ -48,17 +48,24 @@ local env = {
 	require = require,
 }
 
+local function run_error(code, err)
+	print()
+	print('code:', code)
+	print('error:', err)
+	print()
+	return { true, nil, n=3 }
+end
+
 local function run(name, code)
-	local f = assert(load(code, name, 't', env))
+	local f, err = load(code, name, 't', env)
+	if not f then
+		return run_error(code, err)
+	end
 	local ret = pack(pcall(f))
 	if ret[1] then
 		return ret
 	else
-		print()
-		print('code:', code)
-		print('error:', ret[2])
-		print()
-		return { true, nil, n=3 }
+		return run_error(code, ret[2])
 	end
 end
 
