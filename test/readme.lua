@@ -73,6 +73,14 @@ local function run_example(name, code)
 	return run(name, format('return %s', code))
 end
 
+local function table2str(t)
+	local nt = {}
+	for i=1,#t do
+		nt[i] = tostring(t[i])
+	end
+	return '{ ' .. concat(nt, ', ') .. ' }'
+end
+
 local function pack2str(t)
 	local new = {}
 	local n = t.n
@@ -81,6 +89,9 @@ local function pack2str(t)
 		local vt = type(v)
 		if vt == 'nil' then
 			new[i] = 'nil'
+		elseif vt == 'table' then
+			local tostr = rawget(getmetatable(v) or {}, "__tostring") or table2str
+			new[i] = tostr(v)
 		else
 			new[i] = format('%s "%s"', vt, v)
 		end
