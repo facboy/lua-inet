@@ -16,17 +16,23 @@ do
 	local sp = P(' ')
 	local eq = P('=')
 	local nl = P('\n')
-	local div = P(' -- returns ')
 	local non_nl = P(1)-nl
+	local rest_of_line = non_nl^0
 
-	local example = Ct(Cc('example') * C(((P(1)-(div+nl))^1)) * div * C(non_nl^1))
-	local assign_left = P('local ')^-1 * C(((P(1)-((sp^0 * eq)+nl))^1))
+	local div = sp^1 * P('-- returns ')
 	local assign_mid = sp^1 * eq * sp^1
-	local assign_right = C(non_nl^1)
+
+	local not_str = (sp^0 * nl) + div + assign_mid
+	local str = C((P(1)-not_str)^1)
+	local example = Ct(Cc('example') * str * div * sp^0 * str)
+	local assign_left = P('local ')^-1 * str
+	local assign_right = str
 	local assignment = Ct(Cc('assignment') * assign_left * assign_mid * assign_right)
-	local indented_line = sp^2 * (example + assignment)
-	local anyline = non_nl^0
-	local line = indented_line + anyline
+	local comment = P('--') * rest_of_line
+	local indented_line = sp^2 * (comment + example + assignment) * sp^0
+	local anyline = rest_of_line - (sp * rest_of_line)
+	local non_match = Ct(Cc('unable to parse line') * C(rest_of_line))
+	local line = indented_line + anyline + non_match
 
 	readme_parser = Ct((line * nl)^0 * line^-1 * -1)
 end
@@ -109,6 +115,9 @@ local function readme_test()
 		local line = lines[i]
 		local kind = line[1]
 		local handler = handlers[kind]
+		if not handler then
+			print('unknown handler', kind, line[2])
+		end
 		handler(line)
 	end
 end

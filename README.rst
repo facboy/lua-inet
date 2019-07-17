@@ -152,7 +152,7 @@ Addition
 
   inet('2001:db8::/64') + 5 -- returns inet('2001:db8::5/64')
 
-  inet('::ffff:0.0.0.0/96') + inet('192.0.2.24') -- XXXreturns inet('192.0.2.24')
+  --inet('::ffff:0.0.0.0/96') + inet('192.0.2.24') -- returns inet('192.0.2.24')
 
 ``foo - bar``
 ~~~~~~~~~~~~~
@@ -163,7 +163,7 @@ Subtract
 
   inet('2001:db8::5/64') - 5 -- returns inet('2001:db8::/64')
 
-  inet('2001:db8::5/64') - inet('2001:db8::') -- XXXreturns 5
+  --inet('2001:db8::5/64') - inet('2001:db8::') -- returns 5
 
 ``foo / bar``
 ~~~~~~~~~~~~~
