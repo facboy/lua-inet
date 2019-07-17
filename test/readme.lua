@@ -73,6 +73,10 @@ local function run_example(name, code)
 	return run(name, format('return %s', code))
 end
 
+local function get_meta_function(t, fname)
+	return rawget(getmetatable(t) or {}, fname)
+end
+
 local function table2str(t)
 	local nt = {}
 	for i=1,#t do
@@ -90,7 +94,7 @@ local function pack2str(t)
 		if vt == 'nil' then
 			new[i] = 'nil'
 		elseif vt == 'table' then
-			local tostr = rawget(getmetatable(v) or {}, "__tostring") or table2str
+			local tostr = get_meta_function(v, '__tostring') or table2str
 			new[i] = tostr(v)
 		else
 			new[i] = format('%s "%s"', vt, v)
@@ -100,8 +104,8 @@ local function pack2str(t)
 end
 
 local function compare_tables(a, b)
-	local aeq = rawget(getmetatable(a) or {}, "__eq")
-	local beq = rawget(getmetatable(b) or {}, "__eq")
+	local aeq = get_meta_function(a, '__eq')
+	local beq = get_meta_function(b, '__eq')
 	if aeq or beq then
 		if aeq ~= beq then return false end
 		if a ~= b then return false end
