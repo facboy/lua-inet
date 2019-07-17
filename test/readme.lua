@@ -88,16 +88,32 @@ local function pack2str(t)
 	return concat(new, ', ', 2, n)
 end
 
-local function compare_packs(a, b)
-	local n = a.n
-	if n ~= b.n then return false end
-	for i=1,n do
-		local va = a[i]
-		local vb = b[i]
+local function compare_tables(a, b)
+	local aeq = rawget(getmetatable(a) or {}, "__eq")
+	local beq = rawget(getmetatable(b) or {}, "__eq")
+	if aeq or beq then
+		if aeq ~= beq then return false end
+		if a ~= b then return false end
+	end
+	local a_key_cnt = 0
+	for _,_ in pairs(a) do
+		a_key_cnt = a_key_cnt + 1
+	end
+	for k,vb in pairs(b) do
+		a_key_cnt = a_key_cnt - 1
+		local va = a[k]
+		if va == nil then return false end
 		local vat = type(va)
 		local vbt = type(vb)
 		if vat ~= vbt then return false end
-		if va ~= vb then return false end
+		if vat == 'table' then
+			if not compare_tables(va, vb) then return false end
+		else
+			if va ~= vb then return false end
+		end
+	end
+	if a_key_cnt ~= 0 then
+		return false
 	end
 	return true
 end
@@ -113,7 +129,7 @@ local function hdl_example(line)
 	local r1 = run_example('left side', t1)
 	local r2 = run_example('right side', t2)
 	local errmsg = format('"%s" returns %s, not %s', t1, pack2str(r1), pack2str(r2))
-	assert(compare_packs(r1, r2), errmsg)
+	assert(compare_tables(r1, r2), errmsg)
 end
 
 local handlers = {
