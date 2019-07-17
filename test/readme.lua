@@ -9,9 +9,11 @@ local concat = table.concat
 local readme_parser
 do
 	local P = lpeg.P
-	local Ct = lpeg.Ct
+	local S = lpeg.S
+	local V = lpeg.V
 	local C = lpeg.C
 	local Cc = lpeg.Cc
+	local Ct = lpeg.Ct
 
 	local sp = P(' ')
 	local eq = P('=')
@@ -19,12 +21,16 @@ do
 	local non_nl = P(1)-nl
 	local rest_of_line = non_nl^0
 
-	local div = sp^1 * P('-- returns ')
+	local extraline = (nl * sp * sp)^-1
+	local line_or_space = extraline + sp^1
+	local div = line_or_space * P('-- returns') * line_or_space
 	local assign_mid = sp^1 * eq * sp^1
 
-	local not_str = (sp^0 * nl) + div + assign_mid
-	local str = C((P(1)-not_str)^1)
-	local example = Ct(Cc('example') * str * div * sp^0 * str)
+	local table = P{"{" * ((1 - S('{}')) + V(1))^0 * "}"}
+	local not_str = (sp^0 * nl) + div + assign_mid + P('{')
+	local plainstr = (P(1)-not_str)^1
+	local str = C(plainstr * (table * plainstr^0)^0)
+	local example = Ct(Cc('example') * str * div * str)
 	local assign_left = P('local ')^-1 * str
 	local assign_right = str
 	local assignment = Ct(Cc('assignment') * assign_left * assign_mid * assign_right)
