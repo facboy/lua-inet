@@ -1,3 +1,11 @@
+local core = require 'inet.core'
+
+local is_inet = core.is_inet
+
+local insert = table.insert
+local remove = table.remove
+local sort = table.sort
+
 local M = {}
 
 local function table_compact(t, n)
@@ -95,6 +103,7 @@ function M.iterator(set)
 	return iter
 end
 
+-- iterate over the set repeatedly
 function M.loopiterator(set)
 	local orig_iter = M.iterator(set)
 	local function iter()
@@ -107,5 +116,85 @@ function M.loopiterator(set)
 	end
 	return iter
 end
+
+local inet_set = {}
+inet_set.__index = inet_set
+
+local function check_net(self, net)
+	if not is_inet(net) then return nil, 'invalid net' end
+	local set_fam = self.family
+	local net_fam = net:family()
+	if set_fam then
+		if set_fam ~= net_fam then
+			return nil, 'invalid family'
+		end
+	else
+		self.family = net_fam
+	end
+	return true
+end
+
+function inet_set:add(net)--, aggregate)
+	if not check_net(self, net) then return check_net(self, net) end
+	insert(self.nets, net)
+	M.aggregate(self.nets)
+	return true
+end
+
+function inet_set:remove(net)
+	if not check_net(self, net) then return check_net(self, net) end
+	local nets = self.nets
+	local ret = false
+	for i=1,#nets do
+		local n = nets[i]
+		if n == net then
+			ret = true
+			remove(nets, i)
+		elseif n:contains(net) then
+			ret = true
+			remove(nets, i)
+			for j=#n+1,#net do
+				local sn = (net / j):network()
+				if sn:contains(net) then
+					sn = sn:flip()
+				end
+				self:add(sn)
+			end
+		end
+	end
+	return ret
+end
+
+function inet_set:contains(net)
+	if not check_net(self, net) then return check_net(self, net) end
+	local nets = self.nets
+	for i=1,#nets do
+		local n = nets[i]
+		if n == net or n:contains(net) then
+			return true
+		end
+	end
+	return false
+end
+
+function inet_set:list()
+	local nets = self.nets
+	sort(nets)
+	return nets
+end
+
+function inet_set:flush()
+	self.nets = {}
+	self.family = nil
+	return true
+end
+
+local function new_set()
+	return setmetatable({
+		nets = {},
+	}, inet_set)
+end
+
+M.new = new_set
 
 return M

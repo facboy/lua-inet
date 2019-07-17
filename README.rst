@@ -31,12 +31,12 @@ API
 API                     Description
 ======================= =====================================================
 ``inet(...)``           Parse address and build ``inet4`` or ``inet6`` table
-``inet.is(foo)``        is ``foo`` an ``inet*`` table
-``inet.is4(foo)``       is ``foo`` an ``inet4`` table
-``inet.is6(foo)``       is ``foo`` an ``inet6`` table
-``inet.set4()``         get new empty IPv4 set
-``inet.set6()``         get new empty IPv6 set
-``inet.mixed_networks`` IPv6 mixed notation set
+``inet.is(foo)``        is ``foo`` an ``inet*`` table?
+``inet.is4(foo)``       is ``foo`` an ``inet4`` table?
+``inet.is6(foo)``       is ``foo`` an ``inet6`` table?
+``inet.is_set(foo)``    is ``set`` table?
+``inet.set()``          get new empty ``set`` instance.
+``inet.mixed_networks`` IPv6 mixed notation ``set``
 ``inet.version``        API version (currently ``1``)
 ======================= =====================================================
 
@@ -324,30 +324,74 @@ Like ``tostring(foo)``, but never uses mixed notation.
 Sets
 ----
 
+::
+
+  local foo = inet.set()
+
 ``set:list()``
 ~~~~~~~~~~~~~~
 
 list networks in set
+
+::
+
+  foo:list() -- returns {}
 
 ``set:add(foo)``
 ~~~~~~~~~~~~~~~~
 
 add network to set
 
+::
+
+  foo:add(inet('2001:db8::/48')) -- returns true
+  foo:list() -- returns { inet('2001:db8::/48') }
+  foo:add(inet('2001:db8:1::/48')) -- returns true
+  foo:list() -- returns { inet('2001:db8::/47') }
+  foo:add(inet('192.0.2.0/24')) -- returns nil, 'invalid family'
+
 ``set:remove(foo)``
 ~~~~~~~~~~~~~~~~~~~
 
 remove network from set
+
+::
+
+  foo:remove(inet('2001:db8:1::/48')) -- returns true
+  foo:remove(inet('2001:db8:1::/48')) -- returns false
+  foo:list() -- returns { inet('2001:db8::/48') }
+
+  foo:remove(inet('2001:db8:0:4200::/56')) -- returns true
+  foo:list() -- returns {
+    inet('2001:db8::/50'),
+    inet('2001:db8:0:4000::/55'),
+    inet('2001:db8:0:4300::/56'),
+    inet('2001:db8:0:4400::/54'),
+    inet('2001:db8:0:4800::/53'),
+    inet('2001:db8:0:5000::/52'),
+    inet('2001:db8:0:6000::/51'),
+    inet('2001:db8:0:8000::/49'),
+  }
 
 ``set:contains(foo)``
 ~~~~~~~~~~~~~~~~~~~~~
 
 is network contained in set?
 
+::
+
+  foo:contains(inet('2001:db8::'))           -- returns true
+  foo:contains(inet('2001:db8::/32'))        -- returns false
+  foo:contains(inet('2001:db8:1:2:3:4:5:6')) -- returns false
+
 ``set:flush()``
 ~~~~~~~~~~~~~~~
 
 Empties the set.
+
+::
+  foo:flush() -- returns true
+  foo:list() -- returns {}
 
 History
 =======
