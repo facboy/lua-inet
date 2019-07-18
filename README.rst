@@ -361,7 +361,7 @@ Sets
 ``set:list()``
 ~~~~~~~~~~~~~~
 
-list networks in set
+List networks in set.
 
 ::
 
@@ -370,7 +370,7 @@ list networks in set
 ``set:add(foo)``
 ~~~~~~~~~~~~~~~~
 
-add network to set
+Add network to set.
 
 ::
 
@@ -383,7 +383,7 @@ add network to set
 ``set:remove(foo)``
 ~~~~~~~~~~~~~~~~~~~
 
-remove network from set
+Remove network from set.
 
 ::
 
@@ -403,15 +403,19 @@ remove network from set
     inet('2001:db8:0:8000::/49'),
   }
 
+  foo:add(inet('2001:db8:0:4200::/56')) -- returns true
+  foo:list() -- returns { inet('2001:db8::/48') }
+
 ``set:contains(foo)``
 ~~~~~~~~~~~~~~~~~~~~~
 
-is network contained in set?
+Is the network contained or equal to a network in the set?
 
 ::
 
   foo:contains(inet('2001:db8::'))           -- returns true
   foo:contains(inet('2001:db8::/32'))        -- returns false
+  foo:contains(inet('2001:db8::/48'))        -- returns true
   foo:contains(inet('2001:db8:1:2:3:4:5:6')) -- returns false
 
 ``set:flush()``
@@ -421,7 +425,7 @@ Empties the set.
 
 ::
   foo:flush() -- returns true
-  foo:list() -- returns {}
+  foo:list()  -- returns {}
 
 History
 =======
