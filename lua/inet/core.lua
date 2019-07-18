@@ -385,6 +385,12 @@ function inet4:netmask()
 	return new_inet4(replace(0xffffffff, 0, 0, hostbits), 32)
 end
 
+function inet4:hostmask()
+	local mask = self.mask
+	local hostbits = 32 - mask
+	return new_inet4(replace(0xffffffff, 0, hostbits, mask), 32)
+end
+
 function inet4:flip()
 	-- find twin by flipping the last network bit
 	local mask = self.mask
@@ -714,6 +720,11 @@ end
 function inet6:netmask()
 	local mask = self.mask
 	return build_inet6_mask(0, mask, 128 - mask)
+end
+
+function inet6:hostmask()
+	local mask = self.mask
+	return build_inet6_mask(mask, 128 - mask, 0)
 end
 
 function inet6:flip()

@@ -80,6 +80,7 @@ Operator          Description
 ``:ipstring()``   ip as string without prefix
 ``:cidrstring()`` format CIDR notation
 ``:netmask()``    generate netmask as an address
+``:hostmask()``   generate hostmask as an address
 ``:flip()``       flip the least significant network bit
 ================= ======================================
 
@@ -237,6 +238,19 @@ Build an IP address mask with the netmask of ``foo``.
   inet('2001:db8::/52'):netmask() -- returns inet('ffff:ffff:ffff:f000::')
   inet('2001:db8::/56'):netmask() -- returns inet('ffff:ffff:ffff:ff00::')
   inet('2001:db8::/64'):netmask() -- returns inet('ffff:ffff:ffff:ffff::')
+
+
+``foo:hostmask()``
+~~~~~~~~~~~~~~~~~
+
+Build an IP address mask with the netmask of ``foo``.
+
+::
+
+  inet('192.0.2.0/24'):hostmask()   -- returns inet('0.0.0.255')
+  inet('2001:db8::/64'):hostmask()  -- returns inet('::ffff:ffff:ffff:ffff')
+  inet('2001:db8::/116'):hostmask() -- returns inet('::fff')
+  inet('2001:db8::/112'):hostmask() -- returns inet('::ffff')
 
 
 ``foo:flip()``
