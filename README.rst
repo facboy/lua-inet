@@ -79,7 +79,7 @@ Operator          Description
 ``tostring(net)`` convert to network
 ``:ipstring()``   ip as string without prefix
 ``:cidrstring()`` format CIDR notation
-``:netmask()``    generate netmask as address
+``:netmask()``    generate netmask as an address
 ``:flip()``       flip the least significant network bit
 ================= ======================================
 
@@ -234,6 +234,10 @@ Build an IP address mask with the netmask of ``foo``.
 ::
 
   inet('192.0.2.0/24'):netmask() -- returns inet('255.255.255.0')
+  inet('2001:db8::/52'):netmask() -- returns inet('ffff:ffff:ffff:f000::')
+  inet('2001:db8::/56'):netmask() -- returns inet('ffff:ffff:ffff:ff00::')
+  inet('2001:db8::/64'):netmask() -- returns inet('ffff:ffff:ffff:ffff::')
+
 
 ``foo:flip()``
 ~~~~~~~~~~~~~~

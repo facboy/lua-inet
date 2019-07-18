@@ -3,6 +3,9 @@ local bit32 = require 'bit32'
 local common = require 'inet.common'
 
 local format = string.format
+local floor = math.floor
+local min = math.min
+local max = math.max
 
 local lshift = bit32.lshift
 local rshift = bit32.rshift
@@ -686,6 +689,31 @@ function inet6:network()
 		end
 	end
 	return new_inet6(newpcs, netbits)
+end
+
+local function build_inet6_mask(z1, o1, z2)
+	assert(z1 + o1 + z2 == 128)
+	local pcs = { 0, 0, 0, 0, 0, 0, 0, 0 }
+	local b, l = z1, o1
+	if l > 0 then
+		local e = b + l - 1
+		local bpcs = floor(b / 16) + 1
+		local epcs = floor(e / 16) + 1
+		for j=bpcs,epcs do
+			local o = (j-1) * 16
+			local bo = max(0,b-o)
+			local width = min(15,e-o)+1 - bo
+			local fbit = 16 - width - bo
+			local v = replace(pcs[j], 0xffff, fbit, width)
+			pcs[j] = v
+		end
+	end
+	return new_inet6(pcs)
+end
+
+function inet6:netmask()
+	local mask = self.mask
+	return build_inet6_mask(0, mask, 128 - mask)
 end
 
 function inet6:flip()
