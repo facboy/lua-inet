@@ -157,9 +157,12 @@ Addition
 
 ::
 
+  inet('192.0.2.0') + 24    -- returns inet('192.0.2.24')
   inet('2001:db8::/64') + 5 -- returns inet('2001:db8::5/64')
 
-  --inet('::ffff:0.0.0.0/96') + inet('192.0.2.24') -- returns inet('192.0.2.24')
+  -- mixed networks special:
+  inet('::ffff:0.0.0.0/96') + inet('192.0.2.24') -- returns inet('::ffff:192.0.2.24')
+  inet('192.0.2.24') + inet('::ffff:0.0.0.0/96') -- returns inet('::ffff:192.0.2.24')
 
 ``foo - bar``
 ~~~~~~~~~~~~~
@@ -170,7 +173,17 @@ Subtract
 
   inet('2001:db8::5/64') - 5 -- returns inet('2001:db8::/64')
 
-  --inet('2001:db8::5/64') - inet('2001:db8::') -- returns 5
+  inet('192.0.2.24') - inet('192.0.2.0') -- returns 24
+
+  inet('2001:db8::5/64') - inet('2001:db8::') -- returns 5
+
+  -- by calling the operator method directly additional debuging info are available:
+  inet('2001:db8::5/64') - inet('ffff::') -- returns nil
+  inet('2001:db8::5/64'):__sub(inet('ffff::'))
+  -- returns nil, 'result is out of range', { 8194, 3512, 0, 0, 0, 0, 0, 5 }
+
+  -- mixed networks special:
+  inet('::ffff:192.0.2.24') - inet('::ffff:0.0.0.0/96') -- returns inet('192.0.2.24')
 
 ``foo / bar``
 ~~~~~~~~~~~~~

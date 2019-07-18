@@ -299,11 +299,25 @@ function inet4:cidrstring()
 end
 
 function inet4:__add(n)
-	return new_inet4(self.bip + n, self.mask)
+	local type_n = type(n)
+	if type_n == 'number' then
+		return new_inet4(self.bip + n, self.mask)
+	elseif type_n == 'table' and is_inet6(n) then
+		return inet6.__add(n, self)
+	else
+		return nil, 'invalid argument'
+	end
 end
 
 function inet4:__sub(n)
-	return new_inet4(self.bip - n, self.mask)
+	local type_n = type(n)
+	if type_n == 'number' then
+		return new_inet4(self.bip - n, self.mask)
+	elseif type_n == 'table' and is_inet4(n) then
+		return self.bip - n.bip
+	else
+		return nil, 'invalid argument'
+	end
 end
 
 function inet4:__mul(n)
@@ -392,8 +406,7 @@ function inet6:is_balanced()
 	return true
 end
 
-function inet6:balance(quick)
-	local pcs = self.pcs
+local function do_balance(pcs, quick)
 	local i = 8
 	while i > 1 do
 		if quick and pcs[i] > 0 then
@@ -416,6 +429,10 @@ function inet6:balance(quick)
 		i = i - 1
 	end
 	pcs[1] = band(pcs[1], 0xffff)
+end
+
+function inet6:balance(quick)
+	do_balance(self.pcs, quick)
 	return self
 end
 
@@ -596,13 +613,62 @@ end
 function inet6:__add(n)
 	local new = self:clone()
 	local pcs = new.pcs
-	pcs[8] = pcs[8] + n
+	local type_n = type(n)
+	if type_n == 'number' then
+		pcs[8] = pcs[8] + n
+	elseif type_n == 'table' and is_inet4(n) then
+		if #new ~= 96 then return nil, 'inet6 must be a /96' end
+		if #n   ~= 32 then return nil, 'inet4 must be a /32' end
+		if not mixed_networks:contains(new) then
+			return nil, 'inet6 is not a mixed notation network'
+		end
+		if new ~= new:network() then
+			return nil, 'inet6 must be a network address'
+		end
+		local bip = n.bip
+		pcs[7] = band(rshift(bip, 16), 0xffff)
+		pcs[8] = band(bip, 0xffff)
+		new.mask = 128
+	else
+		return nil, 'invalid argument'
+	end
 	new:balance(true)
 	return new
 end
 
 function inet6:__sub(n)
-	return self + (n*-1)
+	local type_n = type(n)
+	if type_n == 'number' then
+		return self + (n*-1)
+	elseif type_n == 'table' and is_inet6(n) then
+		local spcs = self.pcs
+		local npcs = n.pcs
+
+		local dpcs = {}
+		for i=1,8 do
+			dpcs[i] = spcs[i] - npcs[i]
+		end
+		do_balance(dpcs)
+
+		local ret = 0
+		for i=1,8 do
+			local v = dpcs[i]
+			if (i < 7 and v > 0) or v < 0 or v > 0xffff then
+				return nil, 'result is out of range', dpcs
+			end
+			local bits = (8 - i) * 16
+			ret = ret + lshift(band(v, 0xffff), bits)
+		end
+
+		if #self == 128 and #n == 96 and mixed_networks:contains(self)
+			  and mixed_networks:contains(n) then
+			return new_inet4(ret)
+		else
+			return ret
+		end
+	else
+		return nil, 'invalid argument'
+	end
 end
 
 function inet6:network()
