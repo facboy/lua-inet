@@ -305,7 +305,7 @@ Like ``tostring(foo)``, but always return the address in CIDR notation, as speci
 ``foo:ipstring()``
 ~~~~~~~~~~~~~~~~~~
 
-Like ``tostring(foo)``, but always just return the IP address.
+Like ``tostring(foo)``, but always returns the only the IP address, and not the mask.
 
 ::
 
@@ -316,10 +316,20 @@ Like ``tostring(foo)``, but always just return the IP address.
 
 Like ``foo:ipstring()``, but always uses mixed notation.
 
+::
+
+  inet('2001:db8::c000:218'):ipstring()  -- returns '2001:db8::c000:218'
+  inet('2001:db8::c000:218'):ipstring4() -- returns '2001:db8::192.0.2.24'
+
 ``foo:ipstring6()``
 ~~~~~~~~~~~~~~~~~~~
 
 Like ``tostring(foo)``, but never uses mixed notation.
+
+::
+
+  inet('::ffff:192.0.2.24'):ipstring()  -- returns '::ffff:192.0.2.24'
+  inet('::ffff:192.0.2.24'):ipstring6() -- returns '::ffff:c000:218'
 
 Sets
 ----

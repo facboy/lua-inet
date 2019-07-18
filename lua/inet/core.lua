@@ -12,6 +12,8 @@ local bxor = bit32.bxor
 
 local get_mt = common.get_mt
 
+local mixed_networks
+
 local mt2fam = {}
 
 local inet = {}
@@ -428,7 +430,7 @@ local function tostr6(self, withmask, embeddedipv4)
 	local zeros = {}
 
 	if embeddedipv4 == nil then
-		embeddedipv4 = false -- TODO check if well-known prefix
+		embeddedipv4 = mixed_networks:contains(self)
 	end
 
 	local ipv6pieces = 8
@@ -673,6 +675,10 @@ function inet6:__mul(n)
 end
 
 local M = {}
+
+function M.set_mixed_networks(mixed_set)
+	mixed_networks = mixed_set
+end
 
 M.is_inet4 = is_inet4
 M.is_inet6 = is_inet6

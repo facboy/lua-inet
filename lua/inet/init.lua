@@ -14,6 +14,7 @@ do
 	local mixed_networks = set.new()
 	mixed_networks:add(new_inet('::ffff:0.0.0.0/96'))
 	M.mixed_networks = mixed_networks
+	core.set_mixed_networks(mixed_networks)
 end
 
 M.is4 = core.is_inet4
