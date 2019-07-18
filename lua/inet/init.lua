@@ -25,4 +25,7 @@ M.is  = core.is_inet
 M.is_set = set.is_set
 M.set    = set.new
 
+-- API version
+M.version = 1
+
 return setmetatable(M, mt)

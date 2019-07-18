@@ -286,6 +286,8 @@ local function misc()
 	assert(not inet.is(42))
 	assert(inet.is(inet('0.0.0.0')))
 	assert(inet.is(inet('::')))
+
+	assert(inet.version == 1)
 end
 
 local t = test.new()
