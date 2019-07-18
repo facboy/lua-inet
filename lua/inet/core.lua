@@ -1,5 +1,7 @@
 local bit32 = require 'bit32'
 
+local common = require 'inet.common'
+
 local format = string.format
 
 local lshift = bit32.lshift
@@ -7,6 +9,8 @@ local rshift = bit32.rshift
 local band = bit32.band
 local replace = bit32.replace
 local bxor = bit32.bxor
+
+local get_mt = common.get_mt
 
 local mt2fam = {}
 
@@ -20,11 +24,6 @@ mt2fam[inet4] = 4
 local inet6 = setmetatable({}, inet)
 inet6.__index = inet6
 mt2fam[inet6] = 6
-
-local function get_mt(t)
-	if type(t) ~= 'table' then return nil end
-	return getmetatable(t)
-end
 
 local function is_inet4(t)
 	local mt = get_mt(t)

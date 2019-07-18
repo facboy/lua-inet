@@ -14,6 +14,7 @@ M.is4 = core.is_inet4
 M.is6 = core.is_inet6
 M.is  = core.is_inet
 
-M.set = set.new
+M.is_set = set.is_set
+M.set    = set.new
 
 return setmetatable(M, mt)

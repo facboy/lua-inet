@@ -1,6 +1,8 @@
 local core = require 'inet.core'
+local common = require 'inet.common'
 
 local is_inet = core.is_inet
+local get_mt = common.get_mt
 
 local insert = table.insert
 local remove = table.remove
@@ -196,5 +198,10 @@ local function new_set()
 end
 
 M.new = new_set
+
+function M.is_set(t)
+	local mt = get_mt(t)
+	return mt == inet_set
+end
 
 return M
