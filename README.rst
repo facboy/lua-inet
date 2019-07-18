@@ -47,7 +47,14 @@ IPv6 mixed notation configuration
 should use mixed notation, ie. last 32 bits formatted as IPv4,
 as per `RFC 5952`_ section 5.
 
-Initially the set only contains the well-known ``::ffff:0.0.0.0/96`` network.
+Initially the set contains these well-known networks:
+
+::
+
+  inet.mixed_networks:list() -- returns {
+    inet('::ffff:0:0/96'), -- RFC 5156
+    inet('64:ff9b::/96'),  -- RFC 6052
+  }
 
 Common ``inet*`` API
 --------------------

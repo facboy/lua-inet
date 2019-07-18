@@ -12,7 +12,8 @@ end
 
 do
 	local mixed_networks = set.new()
-	mixed_networks:add(new_inet('::ffff:0.0.0.0/96'))
+	mixed_networks:add(new_inet('::ffff:0:0/96')) -- RFC 5156
+	mixed_networks:add(new_inet('64:ff9b::/96')) -- RFC 6052
 	M.mixed_networks = mixed_networks
 	core.set_mixed_networks(mixed_networks)
 end
