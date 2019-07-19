@@ -181,7 +181,7 @@ Subtract
   -- by calling the operator method directly additional debuging info are available:
   inet('2001:db8::5/64') - inet('ffff::') -- returns nil
   inet('2001:db8::5/64'):__sub(inet('ffff::'))
-  -- returns nil, 'result is out of range', { 8194, 3512, 0, 0, 0, 0, 0, 5 }
+  -- returns nil, 'out of range', { -57342, 3512, 0, 0, 0, 0, 0, 5 }
 
   -- mixed networks special:
   inet('::ffff:192.0.2.24') - inet('::ffff:0.0.0.0/96') -- returns inet('192.0.2.24')

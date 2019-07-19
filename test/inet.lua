@@ -288,6 +288,14 @@ local function misc()
 	assert(inet.is(inet('::')))
 
 	assert(inet.version == 1)
+
+	-- check out of bounds handling
+	assert(inet('0.0.0.0') - 1 == nil)
+	assert(inet('255.255.255.255') + 1 == nil)
+	assert(inet('::') - 1 == nil)
+	assert(inet('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff') + 1 == nil)
+	assert(inet('0.0.0.0/24') * -1 == nil)
+	assert(inet('255.255.255.0/24') * 1 == nil)
 end
 
 local t = test.new()

@@ -120,6 +120,9 @@ local function inet4_from_string(ipstr)
 end
 
 local function inet4_from_number(bip)
+	if bip < 0 or bip > 0xffffffff then
+		return nil, 'out of range'
+	end
 	return bip
 end
 
@@ -167,7 +170,7 @@ local function inet6_from_table(t)
 	for i=1,8 do
 		local v = t[i]
 		if type(v) ~= 'number' then return nil, 'invalid number' end
-		if v < 0 or v > 0xffff then return nil, 'octet out of range' end
+		if v < 0 or v > 0xffff then return nil, 'piece out of range' end
 	end
 	return { t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8] }
 end
@@ -437,11 +440,15 @@ local function do_balance(pcs, quick)
 		pcs[i-1] = pcs[i-1] + extra
 		i = i - 1
 	end
-	pcs[1] = band(pcs[1], 0xffff)
+	if pcs[1] < 0 or pcs[1] > 0xffff then
+		return nil, 'out of range'
+	end
+	return true
 end
 
 function inet6:balance(quick)
-	do_balance(self.pcs, quick)
+	local ok, err = do_balance(self.pcs, quick)
+	if not ok then return nil, err end
 	return self
 end
 
@@ -559,6 +566,10 @@ function inet6:contains(other)
 	end
 
 	local snet = self:network()
+	local foo, err = other:__div(mask)
+	if not foo then
+		print(err)
+	end
 	local onet = (other / mask):network()
 
 	return snet == onet
@@ -641,8 +652,7 @@ function inet6:__add(n)
 	else
 		return nil, 'invalid argument'
 	end
-	new:balance(true)
-	return new
+	return new:balance(true)
 end
 
 function inet6:__sub(n)
@@ -657,7 +667,8 @@ function inet6:__sub(n)
 		for i=1,8 do
 			dpcs[i] = spcs[i] - npcs[i]
 		end
-		do_balance(dpcs)
+		local ok, err = do_balance(dpcs)
+		if not ok then return nil, err, dpcs end
 
 		local ret = 0
 		for i=1,8 do
@@ -775,8 +786,7 @@ function inet6:__mul(n)
 		pcs[p-1] = pcs[p-1] + high_shift
 	end
 	pcs[p] = pcs[p] + low_shift
-	new:balance()
-	return new
+	return new:balance()
 end
 
 local M = {}
