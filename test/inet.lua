@@ -296,6 +296,15 @@ local function misc()
 	assert(inet('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff') + 1 == nil)
 	assert(inet('0.0.0.0/24') * -1 == nil)
 	assert(inet('255.255.255.0/24') * 1 == nil)
+
+	assert(inet('192.0.2.24'):bits(-1) == nil)
+	assert(inet('192.0.2.24'):bits(0) == nil)
+	assert(inet('192.0.2.24'):bits(3) == nil)
+	assert(inet('192.0.2.24'):bits(33) == nil)
+	assert(inet('2001:db8::42/64'):bits(-1) == nil)
+	assert(inet('2001:db8::42/64'):bits(0) == nil)
+	assert(inet('2001:db8::42/64'):bits(42) == nil)
+	assert(inet('2001:db8::42/64'):bits(64) == nil)
 end
 
 local t = test.new()

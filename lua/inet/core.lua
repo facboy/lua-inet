@@ -6,10 +6,12 @@ local format = string.format
 local floor = math.floor
 local min = math.min
 local max = math.max
+local insert = table.insert
 
 local lshift = bit32.lshift
 local rshift = bit32.rshift
 local band = bit32.band
+local extract = bit32.extract
 local replace = bit32.replace
 local bxor = bit32.bxor
 
@@ -403,6 +405,17 @@ function inet4:flip()
 	return new_inet4(bxor(self.bip, flipbit), mask)
 end
 
+function inet4:bits(n)
+	if type(n) ~= 'number' then return nil, 'n must be a number' end
+	if n < 1 or n > 32 or 32 % n ~= 0 then return nil, 'invalid value for n' end
+	local t = {}
+	local bip = self.bip
+	for i=32-n,0,-n do
+		insert(t, extract(bip, i, n))
+	end
+	return t
+end
+
 -- each ipv6 address is stored as eight pieces
 -- 1111:2222:3333:4444:5555:6666:7777:8888
 -- in the table pcs.
@@ -787,6 +800,26 @@ function inet6:__mul(n)
 	end
 	pcs[p] = pcs[p] + low_shift
 	return new:balance()
+end
+
+function inet6:bits(n)
+	if type(n) ~= 'number' then return nil, 'n must be a number' end
+	if n < 1 or n > 32 or 128 % n ~= 0 then return nil, 'invalid value for n' end
+	local t = {}
+	local pcs = self.pcs
+	if n == 32 then
+		for i=1,8,2 do
+			insert(t, lshift(pcs[i], 16) + pcs[i+1])
+		end
+	else
+		for i=1,8 do
+			local p = pcs[i]
+			for j=16-n,0,-n do
+				insert(t, extract(p, j, n))
+			end
+		end
+	end
+	return t
 end
 
 local M = {}

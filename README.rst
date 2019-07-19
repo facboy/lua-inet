@@ -82,6 +82,7 @@ Operator          Description
 ``:netmask()``    generate netmask as an address
 ``:hostmask()``   generate hostmask as an address
 ``:flip()``       flip the least significant network bit
+``:bits()``       return the address bits in a table
 ================= ======================================
 
 
@@ -368,6 +369,33 @@ Like ``tostring(foo)``, but never uses mixed notation.
 
   inet('::ffff:192.0.2.24'):ipstring()  -- returns '::ffff:192.0.2.24'
   inet('::ffff:192.0.2.24'):ipstring6() -- returns '::ffff:c000:218'
+
+
+``foo:bits(n)``
+~~~~~~~~~~~~~~~
+
+Return the IP as a table with elements of ``n`` bits each.
+
+Valid values for ``n`` are ``1``, ``2``, ``4``, ``8``, ``16`` or ``32``.
+
+::
+
+  inet('192.0.2.24'):bits(32) -- returns { 3221226008 }
+  inet('192.0.2.24'):bits(16) -- returns { 49152, 536 }
+  inet('192.0.2.24'):bits(8) -- returns { 192, 0, 2, 24 }
+  inet('192.0.2.24'):bits(4) -- returns { 12, 0, 0, 0, 0, 2, 1, 8 }
+  inet('192.0.2.24'):bits(1) -- returns
+    { 1, 1, 0, 0,  0, 0, 0, 0,   0, 0, 0, 0,  0, 0, 0, 0,
+      0, 0, 0, 0,  0, 0, 1, 0,   0, 0, 0, 1,  1, 0, 0, 0 }
+
+  inet('2001:db8::42/64'):bits(32) -- returns { 536939960, 0, 0, 66 }
+  inet('::ffff:192.0.2.24'):bits(32) -- returns { 0, 0, 65535, 3221226008 }
+  inet('2001:db8::42/64'):bits(16) -- returns { 8193, 3512, 0, 0, 0, 0, 0, 66 }
+  inet('2001:db8::42/64'):bits(8) -- returns
+    { 32, 1,  13, 184,  0, 0,  0, 0,  0, 0,  0, 0,  0, 0,  0, 66 }
+  inet('2001:db8::42/64'):bits(4) -- returns
+    { 2, 0, 0, 1,  0, 13, 11, 8,   0, 0, 0, 0,  0, 0, 0, 0,
+      0, 0, 0, 0,  0,  0,  0, 0,   0, 0, 0, 0,  0, 0, 4, 2 }
 
 Sets
 ----
