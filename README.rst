@@ -83,6 +83,7 @@ Operator          Description
 ``:hostmask()``   generate hostmask as an address
 ``:flip()``       flip the least significant network bit
 ``:bits()``       return the address bits in a table
+``:subnets()``    return the amount of /n subnets
 ================= ======================================
 
 
@@ -396,6 +397,24 @@ Valid values for ``n`` are ``1``, ``2``, ``4``, ``8``, ``16`` or ``32``.
   inet('2001:db8::42/64'):bits(4) -- returns
     { 2, 0, 0, 1,  0, 13, 11, 8,   0, 0, 0, 0,  0, 0, 0, 0,
       0, 0, 0, 0,  0,  0,  0, 0,   0, 0, 0, 0,  0, 0, 4, 2 }
+
+
+``foo:subnets(n)``
+~~~~~~~~~~~~~~~~~~
+
+::
+
+  inet('192.0.2.0/24'):subnets(26) -- returns 4
+  inet('192.0.2.0/25'):subnets(26) -- returns 2
+  inet('192.0.2.0/26'):subnets(26) -- returns 1
+  inet('192.0.2.0/27'):subnets(26) -- returns 0.5
+  inet('192.0.2.0/28'):subnets(26) -- returns 0.25
+
+  inet('2001:db8::/48'):subnets(56) -- returns 256
+  inet('2001:db8::/56'):subnets(64) -- returns 256
+  inet('2001:db8::/48'):subnets(64) -- returns 65536
+  inet('2001:db8::/64'):subnets(56) -- returns 0.00390625
+
 
 Sets
 ----

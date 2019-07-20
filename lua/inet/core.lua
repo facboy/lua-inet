@@ -6,6 +6,7 @@ local format = string.format
 local floor = math.floor
 local min = math.min
 local max = math.max
+local pow = math.pow
 local insert = table.insert
 
 local lshift = bit32.lshift
@@ -54,6 +55,16 @@ function inet:__len()
 end
 inet4.__len = inet.__len
 inet6.__len = inet.__len
+
+function inet:subnets(n)
+	if type(n) ~= 'number' then return nil, 'n must be a number' end
+	local hostmask = is_inet6(self) and 128 or 32
+	if n < 0 or n > hostmask then return nil, 'invalid mask given' end
+	local mask = self.mask
+	local bits = n - mask
+	local subnets = pow(2, bits)
+	return subnets
+end
 
 function inet:family()
 	local mt = assert(getmetatable(self))
@@ -329,7 +340,7 @@ function inet4:__sub(n)
 end
 
 function inet4:__mul(n)
-	local new = self.bip + (n * math.pow(2, 32 - self.mask))
+	local new = self.bip + (n * pow(2, 32 - self.mask))
 	return new_inet4(new, self.mask)
 end
 

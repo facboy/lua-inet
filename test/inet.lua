@@ -305,6 +305,11 @@ local function misc()
 	assert(inet('2001:db8::42/64'):bits(0) == nil)
 	assert(inet('2001:db8::42/64'):bits(42) == nil)
 	assert(inet('2001:db8::42/64'):bits(64) == nil)
+
+	assert(inet('192.0.2.24'):subnets(-1) == nil)
+	assert(inet('192.0.2.24'):subnets(33) == nil)
+	assert(inet('2001:db8::42/64'):subnets(-1) == nil)
+	assert(inet('2001:db8::42/64'):subnets(129) == nil)
 end
 
 local t = test.new()
