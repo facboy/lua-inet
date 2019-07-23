@@ -243,7 +243,7 @@ Build an IP address mask with the netmask of ``foo``.
 
 
 ``foo:hostmask()``
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Build an IP address mask with the netmask of ``foo``.
 
@@ -489,6 +489,7 @@ Is the network contained or equal to a network in the set?
 Empties the set.
 
 ::
+
   foo:flush() -- returns true
   foo:list()  -- returns {}
 
