@@ -18,7 +18,7 @@
 Dependencies
 ============
 
-- Lua_ version 5.2 or 5.3
+- Lua_ version 5.2, 5.3 or 5.4 alpha
 - LPeg_ - Parsing Expression Grammars For Lua
 
 API

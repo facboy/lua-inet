@@ -1,6 +1,5 @@
-local bit32 = require 'bit32'
-
 local common = require 'inet.common'
+local bitops = require 'inet.bitops'
 
 local format = string.format
 local floor = math.floor
@@ -9,12 +8,16 @@ local max = math.max
 local pow = math.pow
 local insert = table.insert
 
-local lshift = bit32.lshift
-local rshift = bit32.rshift
-local band = bit32.band
-local extract = bit32.extract
-local replace = bit32.replace
-local bxor = bit32.bxor
+local lshift = bitops.lshift
+local rshift = bitops.rshift
+local band = bitops.band
+local extract = bitops.extract
+local replace = bitops.replace
+local bxor = bitops.bxor
+
+if not pow then
+	function pow(x, y) return x ^ y end
+end
 
 local get_mt = common.get_mt
 
