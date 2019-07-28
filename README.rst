@@ -474,13 +474,14 @@ Remove network from set.
 ``set:contains(foo)``
 ~~~~~~~~~~~~~~~~~~~~~
 
-Is the network contained or equal to a network in the set?
+If the network is contained or equal to a network in the set, then
+the matching network will be returned, otherwise false is.
 
 ::
 
-  foo:contains(inet('2001:db8::'))           -- returns true
+  foo:contains(inet('2001:db8::'))           -- returns inet('2001:db8::/48')
   foo:contains(inet('2001:db8::/32'))        -- returns false
-  foo:contains(inet('2001:db8::/48'))        -- returns true
+  foo:contains(inet('2001:db8::/48'))        -- returns inet('2001:db8::/48')
   foo:contains(inet('2001:db8:1:2:3:4:5:6')) -- returns false
 
 ``set:flush()``

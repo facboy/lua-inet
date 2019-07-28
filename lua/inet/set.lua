@@ -173,7 +173,7 @@ function inet_set:contains(net)
 	for i=1,#nets do
 		local n = nets[i]
 		if n == net or n:contains(net) then
-			return true
+			return n
 		end
 	end
 	return false
