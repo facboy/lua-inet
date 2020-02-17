@@ -279,7 +279,8 @@ Compares ``inet`` instances according to the sort order.
   inet('192.0.2.0/26') < inet('192.0.2.64/26') -- returns true
   inet('192.0.2.0/24') < inet('192.0.2.0/26') -- returns true
   inet('192.0.2.0/26') < inet('192.0.2.1/26')  -- returns true
-
+  inet('192.0.2.0/26') < inet('2001:db8::1/64')  -- returns true
+  inet('2001:db8::1/64') < inet('192.0.2.0/26')  -- returns false
 
 ``==`` and ``~=``
 ~~~~~~~~~~~~~~~~~

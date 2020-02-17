@@ -360,6 +360,7 @@ function inet4:clone()
 end
 
 function inet4:contains(other)
+	if is_inet6(other) then return false end
 	if self.mask >= other.mask then
 		return false
 	end
@@ -370,6 +371,12 @@ function inet4:contains(other)
 end
 
 function inet4:__lt(other)
+	if not is_inet4(other) then
+		if is_inet6(other) then
+			return true
+		end
+		return nil
+	end
 	if self.bip == other.bip then
 		return self.mask < other.mask
 	end
@@ -377,6 +384,12 @@ function inet4:__lt(other)
 end
 
 function inet4:__le(other)
+	if not is_inet4(other) then
+		if is_inet6(other) then
+			return true
+		end
+		return nil
+	end
 	if self.mask < other.mask then
 		return false
 	end
@@ -391,6 +404,7 @@ function inet4:__le(other)
 end
 
 function inet4:__eq(other)
+	if getmetatable(other) ~= inet4 then return false end
 	return self.bip == other.bip and self.mask == other.mask
 end
 
@@ -603,6 +617,12 @@ function inet6:contains(other)
 end
 
 function inet6:__lt(other)
+	if not is_inet6(other) then
+		if is_inet4(other) then
+			return false
+		end
+		return nil
+	end
 	-- self < other
 	local spcs = self.pcs
 	local opcs = other.pcs
@@ -620,6 +640,12 @@ function inet6:__lt(other)
 end
 
 function inet6:__le(other)
+	if not is_inet6(other) then
+		if is_inet4(other) then
+			return false
+		end
+		return nil
+	end
 	-- self <= other
 	local spcs = self.pcs
 	local opcs = other.pcs
