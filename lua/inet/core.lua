@@ -75,6 +75,10 @@ function inet:family()
 	return ret
 end
 
+function inet:full_family()
+	return format('ipv%d', self:family())
+end
+
 local ipv4_parser
 local ipv6_parser
 do

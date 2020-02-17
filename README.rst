@@ -59,33 +59,34 @@ Initially the set contains these well-known networks:
 Common ``inet*`` API
 --------------------
 
-================= ======================================
-Operator          Description
-================= ======================================
-``+``             Addition
-``-``             Subtract
-``/``             Change mask (absolute)
-``^``             Change mask (relative)
-``*``             Move network
-``<``             is less than
-``<=``            is less than or equal
-``==``            equals
-``>=``            is greater or equal
-``>``             is greater than
-``~=``            not equals
-``#``             number of network bits
-``:contains()``   contains
-``:network()``    extract network part of address
-``tostring(net)`` convert to network
-``:ipstring()``   ip as string without prefix
-``:cidrstring()`` format CIDR notation
-``:netmask()``    generate netmask as an address
-``:hostmask()``   generate hostmask as an address
-``:flip()``       flip the least significant network bit
-``:bits()``       return the address bits in a table
-``:subnets()``    return the amount of /n subnets
-``:family()``     return the address family (number)
-================= ======================================
+================== ======================================
+Operator           Description
+================== ======================================
+``+``              Addition
+``-``              Subtract
+``/``              Change mask (absolute)
+``^``              Change mask (relative)
+``*``              Move network
+``<``              is less than
+``<=``             is less than or equal
+``==``             equals
+``>=``             is greater or equal
+``>``              is greater than
+``~=``             not equals
+``#``              number of network bits
+``:contains()``    contains
+``:network()``     extract network part of address
+``tostring(net)``  convert to network
+``:ipstring()``    ip as string without prefix
+``:cidrstring()``  format CIDR notation
+``:netmask()``     generate netmask as an address
+``:hostmask()``    generate hostmask as an address
+``:flip()``        flip the least significant network bit
+``:bits()``        return the address bits in a table
+``:subnets()``     return the amount of /n subnets
+``:family()``      return the address family (number)
+``:full_family()`` return the address family (string)
+================== ======================================
 
 
 Additional ``inet6`` methods
@@ -424,6 +425,14 @@ Valid values for ``n`` are ``1``, ``2``, ``4``, ``8``, ``16`` or ``32``.
 
   inet('192.0.2.0/24'):family()  -- returns 4
   inet('2001:db8::/64'):family() -- returns 6
+
+``foo:full_family(n)``
+~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+  inet('192.0.2.0/24'):full_family()  -- returns 'ipv4'
+  inet('2001:db8::/64'):full_family() -- returns 'ipv6'
 
 Sets
 ----
