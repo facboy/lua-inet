@@ -84,6 +84,7 @@ Operator          Description
 ``:flip()``       flip the least significant network bit
 ``:bits()``       return the address bits in a table
 ``:subnets()``    return the amount of /n subnets
+``:family()``     return the address family (number)
 ================= ======================================
 
 
@@ -416,6 +417,13 @@ Valid values for ``n`` are ``1``, ``2``, ``4``, ``8``, ``16`` or ``32``.
   inet('2001:db8::/48'):subnets(64) -- returns 65536
   inet('2001:db8::/64'):subnets(56) -- returns 0.00390625
 
+``foo:family(n)``
+~~~~~~~~~~~~~~~~~
+
+::
+
+  inet('192.0.2.0/24'):family()  -- returns 4
+  inet('2001:db8::/64'):family() -- returns 6
 
 Sets
 ----

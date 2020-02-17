@@ -71,7 +71,8 @@ end
 
 function inet:family()
 	local mt = assert(getmetatable(self))
-	return assert(mt2fam[mt])
+	local ret = assert(mt2fam[mt])
+	return ret
 end
 
 local ipv4_parser
