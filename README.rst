@@ -2,7 +2,8 @@
 ``inet`` - an IP address mangling library
 =========================================
 
-``inet`` is meant to make it fun to do IP address calculations.
+``inet`` is meant to make it simple and fun to do IP address calculations,
+subnet math and similar IP address related arithmetics.
 
 ::
 
@@ -14,12 +15,50 @@
   -- get last /64 in a /56
   inet('2001:db8::/56') * 1 / 64 * -1 -- returns inet('2001:db8:0:ff::/64')
 
+All examples on this page, are tested when ``make test`` is run.
 
 Dependencies
 ============
 
-- Lua_ version 5.2, 5.3 or 5.4 alpha
+- Lua_ version 5.2, 5.3 or 5.4 beta
 - LPeg_ - Parsing Expression Grammars For Lua
+
+Install
+=======
+
+You can install lua-inet in several ways,
+after all it is just a pure Lua library.
+
+From git
+--------
+
+System-wide
+~~~~~~~~~~~
+
+::
+
+  $ sudo -i
+  # apt install lua-lpeg
+  # git clone https://git.2e8.dk/lua-inet /opt/lua-inet
+  # mkdir -p /usr/local/share/lua/5.3
+  # ln -s /opt/lua-inet/lua/inet /usr/local/share/lua/5.3/inet
+
+Local user
+~~~~~~~~~~
+
+Clone this repo to somewhere, then include this repo's ``lua/`` in your
+``package.path``, with something like this::
+
+  package.path = '/PATH/TO/lua/?.lua;/PATH/TO/lua/?/init.lua;'..package.path
+
+See also the `LUA_INIT`_ environment variable.
+
+LuaRocks
+--------
+
+If you want you can also use LuaRocks_::
+
+  $ luarocks install inet
 
 API
 ===
@@ -172,7 +211,7 @@ Addition
 ``foo - bar``
 ~~~~~~~~~~~~~
 
-Subtract
+Subtraction
 
 ::
 
@@ -528,6 +567,8 @@ This project is licensed under `GNU Lesser General Public License version 3`_ or
 .. _Fiberby: https://peeringdb.com/asn/42541
 .. _Lua: http://www.lua.org/
 .. _LPeg: http://www.inf.puc-rio.br/~roberto/lpeg/
+.. _LuaRocks: https://luarocks.org/modules/asbjorn/inet
+.. _LUA_INIT: http://www.lua.org/manual/5.3/manual.html#pdf-LUA_INIT
 .. _RFC 4632: https://tools.ietf.org/html/rfc4632
 .. _RFC 5952: https://tools.ietf.org/html/rfc5952
 .. _GNU Lesser General Public License version 3: https://www.gnu.org/licenses/lgpl-3.0.en.html

@@ -36,9 +36,12 @@ do
 	local assignment = Ct(Cc('assignment') * assign_left * assign_mid * assign_right)
 	local comment = P('--') * rest_of_line
 	local indented_line = sp^2 * (comment + example + assignment) * sp^0
+	local section = P('=')^1
+	local install_hdr = P('Install') * nl * section * nl
+	local install_section = install_hdr * ((rest_of_line * nl) - section)^1 * section
 	local anyline = rest_of_line - (sp * rest_of_line)
 	local non_match = Ct(Cc('unable to parse line') * C(rest_of_line))
-	local line = indented_line + anyline + non_match
+	local line = indented_line + install_section + anyline + non_match
 
 	readme_parser = Ct((line * nl)^0 * line^-1 * -1)
 end
