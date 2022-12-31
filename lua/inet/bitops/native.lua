@@ -100,6 +100,10 @@ function bit32.rshift(x, disp)
   return trim(x >> disp)
 end
 
+function bit32.bmask(w)
+  return bit32.lshift(0xFFFFFFFF, w)
+end
+
 -------------------------------------------------------------------------------
 
 return bit32

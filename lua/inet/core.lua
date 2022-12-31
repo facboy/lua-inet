@@ -241,9 +241,22 @@ local function generic_new(constructors, high, ip, mask)
 	return iir, outmask
 end
 
-local function new_inet4(ip, mask)
+local function new_inet4(ip, mask, strict)
+	strict = (strict == nil and false) or strict
+
 	local bip, outmask = generic_new(inet4_constructors, 32, ip, mask)
 	if not bip then return nil, outmask end
+
+	local masked = band(bip, bmask(32 - outmask))
+	if masked ~= bip then
+		if strict then
+			local str_ip = inet4.ipstring({bip = bip, mask = outmask})
+			error(str_ip..' has host bits set')
+		else
+			bip = masked
+		end
+	end
+
 	return setmetatable({
 		bip = bip,
 		mask = outmask,
@@ -253,6 +266,8 @@ end
 local function new_inet6(ip, mask)
 	local pcs, outmask = generic_new(inet6_constructors, 128, ip, mask)
 	if not pcs then return nil, outmask end
+
+	-- TODO validate pcs/outmask as we do for inet4
 
 	local r = setmetatable({
 		pcs = pcs,
@@ -299,7 +314,7 @@ local function new_inet(ip, mask)
 	if is_ipv6 then
 		return new_inet6(ip, mask)
 	else
-		return new_inet4(ip, mask)
+		return new_inet4(ip, mask, true)
 	end
 end
 
