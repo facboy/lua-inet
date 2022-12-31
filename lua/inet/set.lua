@@ -155,7 +155,7 @@ function inet_set:remove(net)
 		elseif n:contains(net) then
 			ret = true
 			remove(nets, i)
-			for j=#n+1,#net do
+			for j=n:len()+1,net:len() do
 				local sn = (net / j):network()
 				if sn:contains(net) then
 					sn = sn:flip()

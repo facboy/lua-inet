@@ -14,6 +14,7 @@ local band = bitops.band
 local extract = bitops.extract
 local replace = bitops.replace
 local bxor = bitops.bxor
+local bmask = bitops.bmask
 
 if not pow then
 	function pow(x, y) return x ^ y end
@@ -58,6 +59,10 @@ function inet:__len()
 end
 inet4.__len = inet.__len
 inet6.__len = inet.__len
+-- add a 'public' len method for luajit
+inet.len = inet.__len
+inet4.len = inet.__len
+inet6.len = inet.__len
 
 function inet:subnets(n)
 	if type(n) ~= 'number' then return nil, 'n must be a number' end
@@ -271,11 +276,11 @@ local function new_inet(ip, mask)
 	elseif type_ip == 'number' then
 		is_ipv6 = false
 	elseif is_inet4(ip) then
-		mask = mask or #ip
+		mask = mask or ip:len()
 		ip = ip.bip
 		is_ipv6 = false
 	elseif is_inet6(ip) then
-		mask = mask or #ip
+		mask = mask or ip:len()
 		ip = ip.pcs
 		is_ipv6 = true
 	elseif type_ip == 'table' then
@@ -695,8 +700,8 @@ function inet6:__add(n)
 	if type_n == 'number' then
 		pcs[8] = pcs[8] + n
 	elseif type_n == 'table' and is_inet4(n) then
-		if #new ~= 96 then return nil, 'inet6 must be a /96' end
-		if #n   ~= 32 then return nil, 'inet4 must be a /32' end
+		if new:len() ~= 96 then return nil, 'inet6 must be a /96' end
+		if n:len()   ~= 32 then return nil, 'inet4 must be a /32' end
 		if not mixed_networks:contains(new) then
 			return nil, 'inet6 is not a mixed notation network'
 		end
@@ -738,7 +743,7 @@ function inet6:__sub(n)
 			ret = ret + lshift(band(v, 0xffff), bits)
 		end
 
-		if #self == 128 and #n == 96 and mixed_networks:contains(self)
+		if self.len() == 128 and n.len() == 96 and mixed_networks:contains(self)
 			  and mixed_networks:contains(n) then
 			return new_inet4(ret)
 		else
