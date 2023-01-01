@@ -439,12 +439,23 @@ function inet4:network()
 end
 
 function inet4:netmask()
-	local hostbits = 32 - self.mask
+	local mask = self.mask
+	if mask == 0 then
+		return new_inet4(0, 32)
+	elseif mask == 32 then
+		return new_inet4(0xffffffff, 32)
+	end
+	local hostbits = 32 - mask
 	return new_inet4(replace(0xffffffff, 0, 0, hostbits), 32)
 end
 
 function inet4:hostmask()
 	local mask = self.mask
+	if mask == 0 then
+		return new_inet4(0xffffffff, 32)
+	elseif mask == 32 then
+		return new_inet4(0, 32)
+	end
 	local hostbits = 32 - mask
 	return new_inet4(replace(0xffffffff, 0, hostbits, mask), 32)
 end
